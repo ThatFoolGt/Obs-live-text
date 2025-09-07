@@ -28,6 +28,9 @@ body {
     left: 0;
     top: 50%;
     will-change: transform;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    transform: translateZ(0);
 }
 </style>
 </head>
@@ -43,20 +46,31 @@ const ticker = document.getElementById('ticker');
 let containerWidth = window.innerWidth;
 let tickerWidth = ticker.offsetWidth;
 let position = containerWidth;
-let speed = 2;
+let speed = 1.5;
+let lastTime = 0;
 
 // Duplicate for smooth looping
 const duplicate = ticker.cloneNode(true);
 duplicate.id = 'ticker-duplicate';
 ticker.parentNode.appendChild(duplicate);
 
-function scrollTicker() {
-    position -= speed;
-    if(position < -tickerWidth) {
+function scrollTicker(currentTime) {
+    if (!lastTime) lastTime = currentTime;
+    const deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+    
+    // Use deltaTime for consistent animation speed regardless of framerate
+    const moveDistance = speed * (deltaTime / 16.67); // 16.67ms = 60fps baseline
+    position -= moveDistance;
+    
+    if(position < -tickerWidth - 100) {
         position = containerWidth;
     }
-    ticker.style.transform = `translateX(${position}px) translateY(-50%)`;
-    duplicate.style.transform = `translateX(${position + tickerWidth + 100}px) translateY(-50%)`;
+    
+    // Use transform3d for better GPU acceleration
+    ticker.style.transform = `translate3d(${Math.round(position)}px, -50%, 0)`;
+    duplicate.style.transform = `translate3d(${Math.round(position + tickerWidth + 100)}px, -50%, 0)`;
+    
     requestAnimationFrame(scrollTicker);
 }
 
@@ -67,7 +81,7 @@ window.addEventListener('resize', () => {
     position = containerWidth;
 });
 
-scrollTicker();
+requestAnimationFrame(scrollTicker);
 
 // Socket.io for real-time updates
 const script = document.createElement('script');
@@ -104,8 +118,8 @@ script.onload = function() {
             duplicate.style.fontFamily = data.fontFamily;
         }
         if(data.speed) {
-            // Update speed (this is a simple implementation)
-            speed = data.speed / 50; // Convert from px/sec to animation speed
+            // Convert px/sec to pixels per frame at 60fps
+            speed = data.speed / 60;
         }
     });
 };
