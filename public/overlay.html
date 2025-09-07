@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBS Ticker</title>
+<style>
+body {
+    margin: 0;
+    background: transparent;
+    overflow: hidden;
+    font-family: monospace;
+}
+
+.ticker-container {
+    position: relative;
+    width: 100%;
+    height: 50px; /* Adjust height as needed */
+    overflow: hidden;
+}
+
+.ticker-text {
+    font-size: 36px;
+    color: #00ff00;
+    text-shadow: 2px 2px 4px black;
+    white-space: nowrap;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+</style>
+</head>
+<body>
+<div class="ticker-container">
+    <div class="ticker-text" id="ticker">Welcome to the Stream!</div>
+</div>
+
+<script>
+const ticker = document.getElementById('ticker');
+
+// Full-width continuous scrolling
+let containerWidth = window.innerWidth;
+let tickerWidth = ticker.offsetWidth;
+let position = containerWidth;
+const speed = 2;
+
+// Duplicate for smooth looping
+const duplicate = ticker.cloneNode(true);
+duplicate.id = 'ticker-duplicate';
+ticker.parentNode.appendChild(duplicate);
+
+function scrollTicker() {
+    position -= speed;
+    if(position < -tickerWidth) position = 0;
+    ticker.style.transform = `translateX(${position}px)`;
+    duplicate.style.transform = `translateX(${position + tickerWidth}px)`;
+    requestAnimationFrame(scrollTicker);
+}
+
+// Handle resize
+window.addEventListener('resize', () => {
+    containerWidth = window.innerWidth;
+    tickerWidth = ticker.offsetWidth;
+    position = containerWidth;
+});
+
+scrollTicker();
+
+// WebSocket updates for dynamic text
+const ws = new WebSocket(`ws://${window.location.host}`);
+ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if(data.type === "ticker"){
+        ticker.textContent = data.message;
+        duplicate.textContent = data.message;
+        tickerWidth = ticker.offsetWidth;
+        position = containerWidth;
+    }
+};
+</script>
+</body>
+</html>

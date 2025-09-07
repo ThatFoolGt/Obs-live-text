@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Control Panel - Live Ticker</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;padding:18px;background:#111;color:#eee}
+    label{display:block;margin-top:10px}
+    input,select,textarea{width:100%;padding:8px;margin-top:6px;border-radius:6px;border:1px solid #333;background:#1a1a1a;color:#fff}
+    .row{display:flex;gap:8px}
+    .row > *{flex:1}
+    button{margin-top:12px;padding:10px 14px;border-radius:8px;border:none;background:#0aa;color:#012}
+    .small{font-size:0.9rem}
+  </style>
+</head>
+<body>
+  <h2>Live Ticker Control</h2>
+  <div>
+    <label>Room ID (share overlay link with this room):
+      <input id="room" />
+    </label>
+
+    <label>Text:
+      <textarea id="text" rows="3" placeholder="Type your message...">Hello from the live ticker!</textarea>
+    </label>
+
+    <div class="row">
+      <label>Font size (px):<input id="size" type="number" value="40"/></label>
+      <label>Speed (px/sec):<input id="speed" type="number" value="100"/></label>
+    </div>
+
+    <label>Color:
+      <input id="color" type="color" value="#ffffff" />
+    </label>
+
+    <label>Font family:
+      <select id="font">
+        <option value="Arial, sans-serif">Arial</option>
+        <option value="Helvetica, sans-serif">Helvetica</option>
+        <option value="'Segoe UI', Tahoma, Geneva, sans-serif">Segoe UI</option>
+        <option value="'Courier New', monospace">Courier New</option>
+        <option value="'Times New Roman', serif">Times New Roman</option>
+      </select>
+    </label>
+
+    <button id="send">Send Update</button>
+
+    <p class="small">Overlay link (paste into OBS Browser Source):<br>
+      <code id="overlayLink"></code>
+    </p>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const qp = (name)=> new URLSearchParams(window.location.search).get(name);
+    const initialRoom = qp('room') || '';
+    document.getElementById('room').value = initialRoom;
+
+    function makeOverlayLink(room){
+      const url = new URL(window.location.origin + '/overlay.html');
+      if(room) url.searchParams.set('room', room);
+      return url.toString();
+    }
+
+    const overlayLinkEl = document.getElementById('overlayLink');
+    overlayLinkEl.textContent = makeOverlayLink(initialRoom || 'your_room_id');
+
+    document.getElementById('room').addEventListener('input', (e)=>{
+      overlayLinkEl.textContent = makeOverlayLink(e.target.value.trim());
+    });
+
+    document.getElementById('send').addEventListener('click', ()=>{
+      const room = document.getElementById('room').value.trim() || 'default';
+      const payload = {
+        text: document.getElementById('text').value,
+        fontFamily: document.getElementById('font').value,
+        fontSizePx: Number(document.getElementById('size').value) || 40,
+        color: document.getElementById('color').value || '#ffffff',
+        speed: Number(document.getElementById('speed').value) || 100
+      };
+      socket.emit('update', { room, payload });
+    });
+  </script>
+</body>
+</html>
