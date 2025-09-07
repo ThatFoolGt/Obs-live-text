@@ -3,52 +3,225 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Control Panel - Live Ticker</title>
+  <title>Advanced Ticker Control Panel</title>
   <style>
-    body{font-family:Arial,Helvetica,sans-serif;padding:18px;background:#111;color:#eee}
-    label{display:block;margin-top:10px}
-    input,select,textarea{width:100%;padding:8px;margin-top:6px;border-radius:6px;border:1px solid #333;background:#1a1a1a;color:#fff}
-    .row{display:flex;gap:8px}
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Audiowide&family=Black+Ops+One&family=Russo+One&display=swap');
+    
+    body{font-family:'Orbitron',Arial,Helvetica,sans-serif;padding:18px;background:#0a0a0a;color:#00ff41;margin:0}
+    h2{color:#00ff41;text-shadow:0 0 10px #00ff41;margin-bottom:20px}
+    label{display:block;margin-top:8px;color:#ccc;font-size:0.85rem;font-weight:500}
+    input,select,textarea{width:100%;padding:8px;margin-top:4px;border-radius:6px;border:1px solid #333;background:#1a1a1a;color:#fff;transition:all 0.2s;box-sizing:border-box}
+    input:focus,select:focus,textarea:focus{border-color:#00ff41;box-shadow:0 0 5px rgba(0,255,65,0.3);outline:none}
+    .row{display:flex;gap:8px;align-items:end}
     .row > *{flex:1}
-    button{margin-top:12px;padding:10px 14px;border-radius:8px;border:none;background:#0aa;color:#012}
-    .small{font-size:0.9rem}
+    button{margin-top:12px;padding:12px 16px;border-radius:8px;border:none;background:linear-gradient(45deg,#00aa88,#00ff41);color:#000;font-weight:bold;cursor:pointer;transition:all 0.2s;font-family:inherit}
+    button:hover{background:linear-gradient(45deg,#00ff41,#00aa88);transform:translateY(-1px);box-shadow:0 4px 8px rgba(0,255,65,0.3)}
+    .small{font-size:0.8rem;color:#888}
+    .section{margin-top:20px;padding:15px;background:#111;border-radius:8px;border-left:4px solid #00ff41}
+    .section h3{margin:0 0 10px 0;color:#00ff41;font-size:1rem}
+    input[type="range"]{height:6px;background:#333;outline:none;-webkit-appearance:none;border-radius:3px}
+    input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:#00ff41;cursor:pointer;border-radius:50%;border:2px solid #000}
+    input[type="range"]::-moz-range-thumb{width:18px;height:18px;background:#00ff41;cursor:pointer;border-radius:50%;border:2px solid #000}
+    .preview-box{background:#222;border-radius:5px;padding:10px;margin-top:10px;min-height:60px;border:1px dashed #444;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+    .preview-text{font-size:20px;color:#00ff00;white-space:nowrap}
+    .url-box{background:#222;padding:10px;border-radius:5px;word-break:break-all;font-family:'Courier New',monospace;font-size:0.75rem;border:1px solid #333;margin-top:5px}
+    .btn-secondary{background:#666!important}
+    .btn-secondary:hover{background:#777!important;transform:none}
+    select option{background:#1a1a1a;color:#fff}
+    .color-preview{width:20px;height:20px;border-radius:3px;border:1px solid #333;display:inline-block;margin-left:5px}
   </style>
 </head>
 <body>
-  <h2>Live Ticker Control</h2>
-  <div>
+  <h2>🎬 Advanced Ticker Control Panel</h2>
+  
+  <div class="section">
+    <h3>🏠 Room Settings</h3>
     <label>Room ID (share overlay link with this room):
-      <input id="room" />
+      <input id="room" placeholder="Enter custom room ID" />
     </label>
+  </div>
 
-    <label>Text:
-      <textarea id="text" rows="3" placeholder="Type your message...">Hello from the live ticker!</textarea>
+  <div class="section">
+    <h3>📝 Text Content</h3>
+    <label>Message Text:
+      <textarea id="text" rows="3" placeholder="Enter your ticker message...">🔥 Welcome to the Live Stream! Don't forget to like and subscribe! 🔥</textarea>
     </label>
-
-    <div class="row">
-      <label>Font size (px):<input id="size" type="number" value="40"/></label>
-      <label>Speed (px/sec):<input id="speed" type="number" value="100"/></label>
+    <div class="preview-box">
+      <div class="preview-text" id="preview">Preview will appear here</div>
     </div>
+  </div>
 
-    <label>Color:
-      <input id="color" type="color" value="#ffffff" />
-    </label>
-
-    <label>Font family:
+  <div class="section">
+    <h3>🎨 Typography</h3>
+    <label>Font Family:
       <select id="font">
-        <option value="Arial, sans-serif">Arial</option>
-        <option value="Helvetica, sans-serif">Helvetica</option>
-        <option value="'Segoe UI', Tahoma, Geneva, sans-serif">Segoe UI</option>
-        <option value="'Courier New', monospace">Courier New</option>
-        <option value="'Times New Roman', serif">Times New Roman</option>
+        <option value="'Orbitron', monospace">🤖 Orbitron (Digital/Futuristic)</option>
+        <option value="'Share Tech Mono', monospace">💻 Share Tech Mono (Tech)</option>
+        <option value="'Audiowide', cursive">🎵 Audiowide (Gaming)</option>
+        <option value="'Black Ops One', cursive">💥 Black Ops One (Military)</option>
+        <option value="'Russo One', sans-serif">⚡ Russo One (Bold)</option>
+        <option value="Arial, sans-serif">📰 Arial (Classic)</option>
+        <option value="'Courier New', monospace">⌨️ Courier New (Typewriter)</option>
+        <option value="'Times New Roman', serif">📚 Times New Roman (Formal)</option>
+        <option value="Impact, 'Arial Black', sans-serif">💪 Impact (Strong)</option>
+        <option value="'Comic Sans MS', cursive">😄 Comic Sans (Fun)</option>
       </select>
     </label>
 
-    <button id="send">Send Update</button>
+    <div class="row">
+      <label>Font Size: <span id="sizeValue">40</span>px
+        <input id="size" type="range" min="12" max="200" value="40"/>
+      </label>
+      <label>Letter Spacing: <span id="letterSpacingValue">0</span>px
+        <input id="letterSpacing" type="range" min="-5" max="20" value="0"/>
+      </label>
+    </div>
 
-    <p class="small">Overlay link (paste into OBS Browser Source):<br>
+    <div class="row">
+      <label>Font Weight:
+        <select id="fontWeight">
+          <option value="normal">Normal</option>
+          <option value="bold">Bold</option>
+          <option value="900">Extra Bold</option>
+        </select>
+      </label>
+      <label>Text Transform:
+        <select id="textTransform">
+          <option value="none">None</option>
+          <option value="uppercase">UPPERCASE</option>
+          <option value="lowercase">lowercase</option>
+          <option value="capitalize">Capitalize</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>🌈 Colors & Effects</h3>
+    <div class="row">
+      <label>Text Color:
+        <input id="color" type="color" value="#00ff00" />
+        <span class="color-preview" id="colorPreview"></span>
+      </label>
+      <label>Stroke Color:
+        <input id="strokeColor" type="color" value="#000000" />
+        <span class="color-preview" id="strokeColorPreview"></span>
+      </label>
+    </div>
+
+    <div class="row">
+      <label>Stroke Width: <span id="strokeWidthValue">2</span>px
+        <input id="strokeWidth" type="range" min="0" max="10" value="2"/>
+      </label>
+      <label>Text Opacity: <span id="textOpacityValue">100</span>%
+        <input id="textOpacity" type="range" min="10" max="100" value="100"/>
+      </label>
+    </div>
+
+    <label>Shadow Type:
+      <select id="shadowType">
+        <option value="none">None</option>
+        <option value="basic" selected>Basic Shadow</option>
+        <option value="glow">Glow Effect</option>
+        <option value="neon">Neon Glow</option>
+        <option value="rainbow">Rainbow Glow</option>
+        <option value="fire">Fire Effect</option>
+      </select>
+    </label>
+
+    <div class="row">
+      <label>Shadow Color:
+        <input id="shadowColor" type="color" value="#000000" />
+      </label>
+      <label>Shadow Intensity: <span id="shadowBlurValue">4</span>px
+        <input id="shadowBlur" type="range" min="0" max="30" value="4"/>
+      </label>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>🎭 Background & Border</h3>
+    <label>Background Style:
+      <select id="backgroundType">
+        <option value="transparent" selected>Transparent</option>
+        <option value="solid">Solid Color</option>
+        <option value="gradient">Gradient</option>
+        <option value="glow">Glow Background</option>
+      </select>
+    </label>
+
+    <div class="row">
+      <label>Background Color:
+        <input id="backgroundColor" type="color" value="#000000" />
+      </label>
+      <label>Background Opacity: <span id="backgroundOpacityValue">80</span>%
+        <input id="backgroundOpacity" type="range" min="0" max="100" value="80"/>
+      </label>
+    </div>
+
+    <div class="row">
+      <label>Border Radius: <span id="borderRadiusValue">0</span>px
+        <input id="borderRadius" type="range" min="0" max="50" value="0"/>
+      </label>
+      <label>Border Width: <span id="borderWidthValue">0</span>px
+        <input id="borderWidth" type="range" min="0" max="10" value="0"/>
+      </label>
+    </div>
+
+    <label>Border Color:
+      <input id="borderColor" type="color" value="#ffffff" />
+    </label>
+  </div>
+
+  <div class="section">
+    <h3>⚡ Animation & Movement</h3>
+    <div class="row">
+      <label>Speed: <span id="speedValue">100</span> px/sec
+        <input id="speed" type="range" min="10" max="500" value="100"/>
+      </label>
+      <label>Direction:
+        <select id="direction">
+          <option value="left" selected>← Left to Right</option>
+          <option value="right">→ Right to Left</option>
+          <option value="up">↑ Bottom to Top</option>
+          <option value="down">↓ Top to Bottom</option>
+        </select>
+      </label>
+    </div>
+
+    <label>Animation Style:
+      <select id="animationStyle">
+        <option value="scroll" selected>🔄 Continuous Scroll</option>
+        <option value="fade">🌅 Fade In/Out</option>
+        <option value="typewriter">⌨️ Typewriter</option>
+        <option value="bounce">🏀 Bounce</option>
+        <option value="pulse">💗 Pulse</option>
+        <option value="shake">🌊 Shake</option>
+      </select>
+    </label>
+
+    <label>Easing:
+      <select id="easing">
+        <option value="linear" selected>Linear</option>
+        <option value="ease-in">Ease In</option>
+        <option value="ease-out">Ease Out</option>
+        <option value="ease-in-out">Ease In-Out</option>
+      </select>
+    </label>
+  </div>
+
+  <div style="text-align:center;margin-top:20px">
+    <button id="send">🚀 Apply All Changes</button>
+    <button id="previewBtn" class="btn-secondary" style="margin-left:10px">👁️ Update Preview</button>
+  </div>
+
+  <div class="section">
+    <h3>🔗 OBS Integration</h3>
+    <p class="small">Copy this URL and paste it as a Browser Source in OBS:</p>
+    <div class="url-box">
       <code id="overlayLink"></code>
-    </p>
+    </div>
+    <p class="small">💡 Tip: Set Browser Source width to 1920px, height to 100px for best results</p>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -57,6 +230,82 @@
     const qp = (name)=> new URLSearchParams(window.location.search).get(name);
     const initialRoom = qp('room') || '';
     document.getElementById('room').value = initialRoom;
+
+    // Update range value displays
+    const ranges = ['size', 'letterSpacing', 'strokeWidth', 'textOpacity', 'shadowBlur', 'backgroundOpacity', 'borderRadius', 'borderWidth', 'speed'];
+    ranges.forEach(id => {
+      const element = document.getElementById(id);
+      const valueDisplay = document.getElementById(id + 'Value');
+      if (element && valueDisplay) {
+        element.addEventListener('input', () => {
+          valueDisplay.textContent = element.value;
+          updatePreview();
+        });
+      }
+    });
+
+    // Update color previews
+    ['color', 'strokeColor'].forEach(id => {
+      const colorInput = document.getElementById(id);
+      const preview = document.getElementById(id + 'Preview');
+      if (colorInput && preview) {
+        colorInput.addEventListener('input', () => {
+          preview.style.backgroundColor = colorInput.value;
+          updatePreview();
+        });
+        preview.style.backgroundColor = colorInput.value;
+      }
+    });
+
+    // Update preview function
+    function updatePreview() {
+      const preview = document.getElementById('preview');
+      const text = document.getElementById('text').value || 'Sample Text';
+      preview.textContent = text;
+      
+      const styles = {
+        fontFamily: document.getElementById('font').value,
+        fontSize: document.getElementById('size').value + 'px',
+        color: document.getElementById('color').value,
+        fontWeight: document.getElementById('fontWeight').value,
+        textTransform: document.getElementById('textTransform').value,
+        letterSpacing: document.getElementById('letterSpacing').value + 'px',
+        opacity: document.getElementById('textOpacity').value / 100
+      };
+
+      Object.assign(preview.style, styles);
+
+      // Apply shadow
+      const shadowType = document.getElementById('shadowType').value;
+      const shadowColor = document.getElementById('shadowColor').value;
+      const shadowBlur = document.getElementById('shadowBlur').value;
+      
+      switch(shadowType) {
+        case 'basic':
+          preview.style.textShadow = `2px 2px ${shadowBlur}px ${shadowColor}`;
+          break;
+        case 'glow':
+          preview.style.textShadow = `0 0 ${shadowBlur}px ${shadowColor}`;
+          break;
+        case 'neon':
+          preview.style.textShadow = `0 0 5px ${shadowColor}, 0 0 10px ${shadowColor}, 0 0 15px ${shadowColor}`;
+          break;
+        case 'rainbow':
+          preview.style.textShadow = `0 0 5px #ff0080, 0 0 10px #00ff80, 0 0 15px #8000ff`;
+          break;
+        case 'fire':
+          preview.style.textShadow = `0 0 5px #ff4400, 0 0 10px #ff6600, 0 0 15px #ff8800`;
+          break;
+        default:
+          preview.style.textShadow = 'none';
+      }
+    }
+
+    // Add event listeners for all inputs
+    ['text', 'font', 'fontWeight', 'textTransform', 'shadowType', 'shadowColor'].forEach(id => {
+      document.getElementById(id).addEventListener('change', updatePreview);
+      document.getElementById(id).addEventListener('input', updatePreview);
+    });
 
     function makeOverlayLink(room){
       const url = new URL(window.location.origin + '/overlay.html');
@@ -71,17 +320,40 @@
       overlayLinkEl.textContent = makeOverlayLink(e.target.value.trim());
     });
 
+    document.getElementById('previewBtn').addEventListener('click', updatePreview);
+
     document.getElementById('send').addEventListener('click', ()=>{
       const room = document.getElementById('room').value.trim() || 'default';
       const payload = {
         text: document.getElementById('text').value,
         fontFamily: document.getElementById('font').value,
         fontSizePx: Number(document.getElementById('size').value) || 40,
-        color: document.getElementById('color').value || '#ffffff',
-        speed: Number(document.getElementById('speed').value) || 100
+        fontWeight: document.getElementById('fontWeight').value,
+        textTransform: document.getElementById('textTransform').value,
+        letterSpacing: Number(document.getElementById('letterSpacing').value) || 0,
+        color: document.getElementById('color').value || '#00ff00',
+        strokeColor: document.getElementById('strokeColor').value,
+        strokeWidth: Number(document.getElementById('strokeWidth').value) || 0,
+        textOpacity: Number(document.getElementById('textOpacity').value) || 100,
+        shadowType: document.getElementById('shadowType').value,
+        shadowColor: document.getElementById('shadowColor').value,
+        shadowBlur: Number(document.getElementById('shadowBlur').value) || 0,
+        backgroundType: document.getElementById('backgroundType').value,
+        backgroundColor: document.getElementById('backgroundColor').value,
+        backgroundOpacity: Number(document.getElementById('backgroundOpacity').value) || 80,
+        borderRadius: Number(document.getElementById('borderRadius').value) || 0,
+        borderWidth: Number(document.getElementById('borderWidth').value) || 0,
+        borderColor: document.getElementById('borderColor').value,
+        speed: Number(document.getElementById('speed').value) || 100,
+        direction: document.getElementById('direction').value,
+        animationStyle: document.getElementById('animationStyle').value,
+        easing: document.getElementById('easing').value
       };
       socket.emit('update', { room, payload });
     });
+
+    // Initialize preview
+    updatePreview();
   </script>
 </body>
 </html>
