@@ -285,6 +285,13 @@ io.on('connection', (socket) => {
     io.to(room).emit('update', payload);
   });
 
+  // handle chat messages
+  socket.on('chatMessage', (data) => {
+    const { room, message } = data;
+    if (!room) return;
+    io.to(room).emit('chatMessage', message);
+  });
+
   socket.on('disconnect', () => {});
 });
 
