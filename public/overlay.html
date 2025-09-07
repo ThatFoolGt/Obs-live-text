@@ -27,7 +27,7 @@ body {
     position: absolute;
     left: 0;
     top: 50%;
-    transform: translateY(-50%);
+    will-change: transform;
 }
 </style>
 </head>
@@ -52,9 +52,11 @@ ticker.parentNode.appendChild(duplicate);
 
 function scrollTicker() {
     position -= speed;
-    if(position < -tickerWidth) position = 0;
-    ticker.style.transform = `translateX(${position}px)`;
-    duplicate.style.transform = `translateX(${position + tickerWidth}px)`;
+    if(position < -tickerWidth) {
+        position = containerWidth;
+    }
+    ticker.style.transform = `translateX(${position}px) translateY(-50%)`;
+    duplicate.style.transform = `translateX(${position + tickerWidth + 100}px) translateY(-50%)`;
     requestAnimationFrame(scrollTicker);
 }
 
@@ -83,8 +85,11 @@ script.onload = function() {
         if(data.text) {
             ticker.textContent = data.text;
             duplicate.textContent = data.text;
-            tickerWidth = ticker.offsetWidth;
-            position = containerWidth;
+            // Wait a frame for the DOM to update before measuring
+            requestAnimationFrame(() => {
+                tickerWidth = ticker.offsetWidth;
+                position = containerWidth;
+            });
         }
         if(data.color) {
             ticker.style.color = data.color;
