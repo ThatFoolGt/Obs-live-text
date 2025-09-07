@@ -133,10 +133,7 @@ let direction = 'left';
 let animationStyle = 'scroll';
 let animationId = null;
 
-// Create duplicate for smooth looping
-const duplicate = ticker.cloneNode(true);
-duplicate.id = 'ticker-duplicate';
-tickerBg.appendChild(duplicate);
+// Remove duplicate - we'll use single infinite scroll
 
 function applyTextShadow(shadowType, shadowColor, shadowBlur) {
     let shadow = 'none';
@@ -162,7 +159,6 @@ function applyTextShadow(shadowType, shadowColor, shadowBlur) {
     }
     
     ticker.style.textShadow = shadow;
-    duplicate.style.textShadow = shadow;
 }
 
 function applyBackground(backgroundType, backgroundColor, backgroundOpacity) {
@@ -209,27 +205,23 @@ function scrollTicker(currentTime) {
     switch(direction) {
         case 'left':
             position -= moveDistance;
-            if(position < -tickerWidth - 100) position = containerWidth;
+            if(position < -tickerWidth) position = containerWidth;
             ticker.style.transform = `translate3d(${Math.round(position)}px, -50%, 0)`;
-            duplicate.style.transform = `translate3d(${Math.round(position + tickerWidth + 100)}px, -50%, 0)`;
             break;
         case 'right':
             position += moveDistance;
-            if(position > containerWidth + 100) position = -tickerWidth;
+            if(position > containerWidth) position = -tickerWidth;
             ticker.style.transform = `translate3d(${Math.round(position)}px, -50%, 0)`;
-            duplicate.style.transform = `translate3d(${Math.round(position - tickerWidth - 100)}px, -50%, 0)`;
             break;
         case 'up':
             position -= moveDistance;
-            if(position < -100) position = containerHeight;
+            if(position < -50) position = containerHeight;
             ticker.style.transform = `translate3d(-50%, ${Math.round(position)}px, 0)`;
-            duplicate.style.transform = `translate3d(-50%, ${Math.round(position + 100)}px, 0)`;
             break;
         case 'down':
             position += moveDistance;
-            if(position > containerHeight + 100) position = -100;
+            if(position > containerHeight) position = -50;
             ticker.style.transform = `translate3d(-50%, ${Math.round(position)}px, 0)`;
-            duplicate.style.transform = `translate3d(-50%, ${Math.round(position - 100)}px, 0)`;
             break;
     }
     
@@ -246,7 +238,6 @@ function startAnimation() {
     
     // Clear existing animation classes
     ticker.classList.remove('fade-animation', 'typewriter-animation', 'bounce-animation', 'pulse-animation', 'shake-animation');
-    duplicate.classList.remove('fade-animation', 'typewriter-animation', 'bounce-animation', 'pulse-animation', 'shake-animation');
     
     switch(animationStyle) {
         case 'scroll':
@@ -255,31 +246,26 @@ function startAnimation() {
             break;
         case 'fade':
             ticker.classList.add('fade-animation');
-            duplicate.style.display = 'none';
             ticker.style.position = 'static';
             ticker.style.transform = 'none';
             break;
         case 'typewriter':
             ticker.classList.add('typewriter-animation');
-            duplicate.style.display = 'none';
             ticker.style.position = 'static';
             ticker.style.transform = 'none';
             break;
         case 'bounce':
             ticker.classList.add('bounce-animation');
-            duplicate.style.display = 'none';
             ticker.style.position = 'static';
             ticker.style.transform = 'none';
             break;
         case 'pulse':
             ticker.classList.add('pulse-animation');
-            duplicate.style.display = 'none';
             ticker.style.position = 'static';
             ticker.style.transform = 'none';
             break;
         case 'shake':
             ticker.classList.add('shake-animation');
-            duplicate.style.display = 'none';
             ticker.style.position = 'static';
             ticker.style.transform = 'none';
             break;
@@ -311,7 +297,6 @@ script.onload = function() {
     socket.on('update', (data) => {
         if(data.text) {
             ticker.textContent = data.text;
-            duplicate.textContent = data.text;
             requestAnimationFrame(() => {
                 tickerWidth = ticker.offsetWidth;
                 if(direction === 'left' || direction === 'right') {
@@ -324,47 +309,38 @@ script.onload = function() {
         
         if(data.fontFamily) {
             ticker.style.fontFamily = data.fontFamily;
-            duplicate.style.fontFamily = data.fontFamily;
         }
         
         if(data.fontSizePx) {
             ticker.style.fontSize = data.fontSizePx + 'px';
-            duplicate.style.fontSize = data.fontSizePx + 'px';
         }
         
         if(data.fontWeight) {
             ticker.style.fontWeight = data.fontWeight;
-            duplicate.style.fontWeight = data.fontWeight;
         }
         
         if(data.textTransform) {
             ticker.style.textTransform = data.textTransform;
-            duplicate.style.textTransform = data.textTransform;
         }
         
         if(data.letterSpacing !== undefined) {
             ticker.style.letterSpacing = data.letterSpacing + 'px';
-            duplicate.style.letterSpacing = data.letterSpacing + 'px';
         }
         
         if(data.color) {
             ticker.style.color = data.color;
-            duplicate.style.color = data.color;
         }
         
         if(data.strokeColor && data.strokeWidth > 0) {
             const strokeStyle = `${data.strokeWidth}px ${data.strokeColor}`;
             ticker.style.webkitTextStroke = strokeStyle;
-            duplicate.style.webkitTextStroke = strokeStyle;
         } else {
             ticker.style.webkitTextStroke = 'none';
-            duplicate.style.webkitTextStroke = 'none';
         }
         
         if(data.textOpacity) {
             const opacity = data.textOpacity / 100;
             ticker.style.opacity = opacity;
-            duplicate.style.opacity = opacity;
         }
         
         if(data.shadowType) {
