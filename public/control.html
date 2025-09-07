@@ -450,6 +450,65 @@
       box-shadow: 0 15px 40px rgba(0,0,0,0.4);
     }
     
+    /* Voice Chat Styles */
+    .voice-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .mic-btn {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .mic-btn.active {
+      background: linear-gradient(45deg, #ff4444, #ff6666) !important;
+      animation: pulse-recording 1.5s infinite;
+    }
+    
+    @keyframes pulse-recording {
+      0%, 100% { box-shadow: 0 0 10px rgba(255, 68, 68, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(255, 68, 68, 0.8); }
+    }
+    
+    .voice-status {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      padding: 10px;
+      background: #0f0f0f;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+    
+    .mic-level {
+      width: 100px;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .level-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4da6ff, #0066cc);
+      border-radius: 3px;
+      transition: width 0.1s ease;
+    }
+    
+    .level-bar.active {
+      background: linear-gradient(90deg, #ff4444, #ff6666);
+    }
+    
     /* Scrollbar Styling */
     ::-webkit-scrollbar {
       width: 8px;
@@ -644,6 +703,31 @@
             <input id="chatDuration" type="range" min="5" max="30" value="10"/>
           </div>
         </div>
+
+        <div class="control-section">
+          <h3 class="section-title">🎤 Voice Chat</h3>
+          <div class="voice-controls">
+            <button id="micToggle" class="btn btn-secondary mic-btn">
+              🎤 Start Voice Chat
+            </button>
+            <div class="voice-status" id="voiceStatus">
+              <div class="mic-level" id="micLevel">
+                <div class="level-bar" id="levelBar"></div>
+              </div>
+              <span id="statusText">Voice chat disabled</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="micVolume">Microphone Volume: <span class="value-display" id="micVolumeValue">80</span>%</label>
+            <input id="micVolume" type="range" min="0" max="100" value="80"/>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="pushToTalk" /> Push to Talk Mode
+            </label>
+            <small style="color: #888; margin-top: 5px; display: block;">Hold SPACE to talk when enabled</small>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -803,6 +887,197 @@
 
     // Preview button
     document.getElementById('previewBtn').addEventListener('click', updatePreview);
+
+    // Voice Chat Variables
+    let mediaStream = null;
+    let audioContext = null;
+    let analyser = null;
+    let microphone = null;
+    let isVoiceActive = false;
+    let pushToTalkMode = false;
+    let isSpacePressed = false;
+    let micVolume = 0.8;
+
+    // Voice Chat Functionality
+    async function initializeVoiceChat() {
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        microphone = audioContext.createMediaStreamSource(mediaStream);
+        
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = micVolume;
+        
+        microphone.connect(gainNode);
+        gainNode.connect(analyser);
+        
+        analyser.fftSize = 256;
+        
+        startMicrophoneMonitoring();
+        return true;
+      } catch (error) {
+        console.error('Failed to access microphone:', error);
+        updateVoiceStatus('Microphone access denied', false);
+        return false;
+      }
+    }
+
+    function startMicrophoneMonitoring() {
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      
+      function updateMicLevel() {
+        if (!analyser) return;
+        
+        analyser.getByteFrequencyData(dataArray);
+        
+        let sum = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          sum += dataArray[i];
+        }
+        const average = sum / bufferLength;
+        const level = Math.min(100, (average / 255) * 100 * 2);
+        
+        const levelBar = document.getElementById('levelBar');
+        levelBar.style.width = level + '%';
+        
+        if (level > 10) {
+          levelBar.classList.add('active');
+        } else {
+          levelBar.classList.remove('active');
+        }
+        
+        // Auto-detect voice activity (if not in push-to-talk mode)
+        if (!pushToTalkMode && level > 15 && !isVoiceActive) {
+          startTransmitting();
+        } else if (!pushToTalkMode && level < 10 && isVoiceActive) {
+          setTimeout(() => {
+            if (analyser) {
+              analyser.getByteFrequencyData(dataArray);
+              let newSum = 0;
+              for (let i = 0; i < bufferLength; i++) {
+                newSum += dataArray[i];
+              }
+              const newAverage = newSum / bufferLength;
+              const newLevel = Math.min(100, (newAverage / 255) * 100 * 2);
+              if (newLevel < 10) {
+                stopTransmitting();
+              }
+            }
+          }, 500);
+        }
+        
+        requestAnimationFrame(updateMicLevel);
+      }
+      
+      updateMicLevel();
+    }
+
+    function startTransmitting() {
+      if (isVoiceActive) return;
+      
+      isVoiceActive = true;
+      updateVoiceStatus('🎤 Transmitting...', true);
+      
+      // Emit voice start event
+      const room = document.getElementById('room').value.trim() || 'default';
+      socket.emit('voiceStart', { room });
+    }
+
+    function stopTransmitting() {
+      if (!isVoiceActive) return;
+      
+      isVoiceActive = false;
+      updateVoiceStatus('🎤 Voice chat active', true);
+      
+      // Emit voice stop event
+      const room = document.getElementById('room').value.trim() || 'default';
+      socket.emit('voiceStop', { room });
+    }
+
+    function updateVoiceStatus(text, active) {
+      const statusText = document.getElementById('statusText');
+      const micToggle = document.getElementById('micToggle');
+      const levelBar = document.getElementById('levelBar');
+      
+      statusText.textContent = text;
+      
+      if (active) {
+        micToggle.classList.add('active');
+        micToggle.innerHTML = '🔴 Stop Voice Chat';
+      } else {
+        micToggle.classList.remove('active');
+        micToggle.innerHTML = '🎤 Start Voice Chat';
+        levelBar.style.width = '0%';
+        levelBar.classList.remove('active');
+      }
+    }
+
+    function stopVoiceChat() {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+      }
+      
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+      }
+      
+      analyser = null;
+      microphone = null;
+      isVoiceActive = false;
+      
+      updateVoiceStatus('Voice chat disabled', false);
+    }
+
+    // Voice Chat Event Listeners
+    document.getElementById('micToggle').addEventListener('click', async () => {
+      if (!mediaStream) {
+        const success = await initializeVoiceChat();
+        if (success) {
+          updateVoiceStatus('🎤 Voice chat active', true);
+        }
+      } else {
+        stopVoiceChat();
+      }
+    });
+
+    document.getElementById('micVolume').addEventListener('input', (e) => {
+      micVolume = e.target.value / 100;
+      document.getElementById('micVolumeValue').textContent = e.target.value;
+      
+      if (audioContext && microphone) {
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = micVolume;
+      }
+    });
+
+    document.getElementById('pushToTalk').addEventListener('change', (e) => {
+      pushToTalkMode = e.target.checked;
+      
+      if (pushToTalkMode && isVoiceActive && !isSpacePressed) {
+        stopTransmitting();
+      }
+    });
+
+    // Push-to-talk controls
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && pushToTalkMode && mediaStream && !isSpacePressed) {
+        e.preventDefault();
+        isSpacePressed = true;
+        startTransmitting();
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (e.code === 'Space' && pushToTalkMode && isSpacePressed) {
+        e.preventDefault();
+        isSpacePressed = false;
+        stopTransmitting();
+      }
+    });
 
     // Chat functionality
     let chatMessages = [];

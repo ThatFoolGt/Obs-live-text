@@ -292,6 +292,19 @@ io.on('connection', (socket) => {
     io.to(room).emit('chatMessage', message);
   });
 
+  // handle voice chat events
+  socket.on('voiceStart', (data) => {
+    const { room } = data;
+    if (!room) return;
+    socket.to(room).emit('voiceStart', { streamer: true });
+  });
+
+  socket.on('voiceStop', (data) => {
+    const { room } = data;
+    if (!room) return;
+    socket.to(room).emit('voiceStop', { streamer: true });
+  });
+
   socket.on('disconnect', () => {});
 });
 
