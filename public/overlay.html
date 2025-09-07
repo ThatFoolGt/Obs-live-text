@@ -43,7 +43,7 @@ const ticker = document.getElementById('ticker');
 let containerWidth = window.innerWidth;
 let tickerWidth = ticker.offsetWidth;
 let position = containerWidth;
-const speed = 2;
+let speed = 2;
 
 // Duplicate for smooth looping
 const duplicate = ticker.cloneNode(true);
@@ -67,17 +67,44 @@ window.addEventListener('resize', () => {
 
 scrollTicker();
 
-// WebSocket updates for dynamic text
-const ws = new WebSocket(`ws://${window.location.host}`);
-ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    if(data.type === "ticker"){
-        ticker.textContent = data.message;
-        duplicate.textContent = data.message;
-        tickerWidth = ticker.offsetWidth;
-        position = containerWidth;
-    }
+// Socket.io for real-time updates
+const script = document.createElement('script');
+script.src = '/socket.io/socket.io.js';
+script.onload = function() {
+    const socket = io();
+    const urlParams = new URLSearchParams(window.location.search);
+    const room = urlParams.get('room') || 'default';
+    
+    // Join room
+    socket.emit('join', room);
+    
+    // Listen for updates from control panel
+    socket.on('update', (data) => {
+        if(data.text) {
+            ticker.textContent = data.text;
+            duplicate.textContent = data.text;
+            tickerWidth = ticker.offsetWidth;
+            position = containerWidth;
+        }
+        if(data.color) {
+            ticker.style.color = data.color;
+            duplicate.style.color = data.color;
+        }
+        if(data.fontSizePx) {
+            ticker.style.fontSize = data.fontSizePx + 'px';
+            duplicate.style.fontSize = data.fontSizePx + 'px';
+        }
+        if(data.fontFamily) {
+            ticker.style.fontFamily = data.fontFamily;
+            duplicate.style.fontFamily = data.fontFamily;
+        }
+        if(data.speed) {
+            // Update speed (this is a simple implementation)
+            speed = data.speed / 50; // Convert from px/sec to animation speed
+        }
+    });
 };
+document.head.appendChild(script);
 </script>
 </body>
 </html>
