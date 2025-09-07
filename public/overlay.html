@@ -3,20 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OBS Ticker</title>
+<title>OBS Advanced Ticker Overlay</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Audiowide&family=Black+Ops+One&family=Russo+One&display=swap');
+
 body {
     margin: 0;
     background: transparent;
     overflow: hidden;
-    font-family: monospace;
+    font-family: 'Orbitron', monospace;
+    width: 100vw;
+    height: 100vh;
 }
 
 .ticker-container {
     position: relative;
     width: 100%;
-    height: 50px; /* Adjust height as needed */
+    height: 100%;
     overflow: hidden;
+    display: flex;
+    align-items: center;
 }
 
 .ticker-text {
@@ -25,63 +31,272 @@ body {
     text-shadow: 2px 2px 4px black;
     white-space: nowrap;
     position: absolute;
-    left: 0;
-    top: 50%;
     will-change: transform;
     backface-visibility: hidden;
     -webkit-font-smoothing: antialiased;
     transform: translateZ(0);
+    font-family: 'Orbitron', monospace;
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: 0px;
+    opacity: 1;
+}
+
+.ticker-background {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 10px 20px;
+    border-radius: 0px;
+    border: 0px solid transparent;
+    background: transparent;
+    opacity: 1;
+}
+
+/* Animation classes */
+.fade-animation {
+    animation: fadeInOut 3s infinite;
+}
+
+.typewriter-animation {
+    overflow: hidden;
+    border-right: 2px solid;
+    animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+.bounce-animation {
+    animation: bounce 2s infinite;
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+.shake-animation {
+    animation: shake 1s infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: currentColor; }
+}
+
+@keyframes bounce {
+    0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+    40%, 43% { transform: translateY(-20px); }
+    70% { transform: translateY(-10px); }
+    90% { transform: translateY(-4px); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
 }
 </style>
 </head>
 <body>
 <div class="ticker-container">
-    <div class="ticker-text" id="ticker">Welcome to the Stream!</div>
+    <div class="ticker-background" id="tickerBg">
+        <div class="ticker-text" id="ticker">🔥 Welcome to the Live Stream! 🔥</div>
+    </div>
 </div>
 
 <script>
 const ticker = document.getElementById('ticker');
+const tickerBg = document.getElementById('tickerBg');
 
-// Full-width continuous scrolling
+// Animation variables
 let containerWidth = window.innerWidth;
+let containerHeight = window.innerHeight;
 let tickerWidth = ticker.offsetWidth;
 let position = containerWidth;
 let speed = 1.5;
 let lastTime = 0;
+let direction = 'left';
+let animationStyle = 'scroll';
+let animationId = null;
 
-// Duplicate for smooth looping
+// Create duplicate for smooth looping
 const duplicate = ticker.cloneNode(true);
 duplicate.id = 'ticker-duplicate';
-ticker.parentNode.appendChild(duplicate);
+tickerBg.appendChild(duplicate);
+
+function applyTextShadow(shadowType, shadowColor, shadowBlur) {
+    let shadow = 'none';
+    
+    switch(shadowType) {
+        case 'basic':
+            shadow = `2px 2px ${shadowBlur}px ${shadowColor}`;
+            break;
+        case 'glow':
+            shadow = `0 0 ${shadowBlur}px ${shadowColor}`;
+            break;
+        case 'neon':
+            shadow = `0 0 5px ${shadowColor}, 0 0 10px ${shadowColor}, 0 0 15px ${shadowColor}, 0 0 20px ${shadowColor}`;
+            break;
+        case 'rainbow':
+            shadow = `0 0 5px #ff0080, 0 0 10px #00ff80, 0 0 15px #8000ff, 0 0 20px #ff4080`;
+            break;
+        case 'fire':
+            shadow = `0 0 5px #ff4400, 0 0 10px #ff6600, 0 0 15px #ff8800, 0 0 20px #ffaa00`;
+            break;
+        default:
+            shadow = 'none';
+    }
+    
+    ticker.style.textShadow = shadow;
+    duplicate.style.textShadow = shadow;
+}
+
+function applyBackground(backgroundType, backgroundColor, backgroundOpacity) {
+    let background = 'transparent';
+    
+    switch(backgroundType) {
+        case 'solid':
+            const opacity = backgroundOpacity / 100;
+            const rgb = hexToRgb(backgroundColor);
+            background = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;
+            break;
+        case 'gradient':
+            const rgb1 = hexToRgb(backgroundColor);
+            const rgb2 = {r: Math.min(255, rgb1.r + 50), g: Math.min(255, rgb1.g + 50), b: Math.min(255, rgb1.b + 50)};
+            background = `linear-gradient(45deg, rgba(${rgb1.r}, ${rgb1.g}, ${rgb1.b}, ${backgroundOpacity/100}), rgba(${rgb2.r}, ${rgb2.g}, ${rgb2.b}, ${backgroundOpacity/100}))`;
+            break;
+        case 'glow':
+            const rgbGlow = hexToRgb(backgroundColor);
+            background = `radial-gradient(ellipse, rgba(${rgbGlow.r}, ${rgbGlow.g}, ${rgbGlow.b}, ${backgroundOpacity/100}), transparent)`;
+            break;
+        default:
+            background = 'transparent';
+    }
+    
+    tickerBg.style.background = background;
+}
+
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : {r: 0, g: 255, b: 0};
+}
 
 function scrollTicker(currentTime) {
     if (!lastTime) lastTime = currentTime;
     const deltaTime = currentTime - lastTime;
     lastTime = currentTime;
     
-    // Use deltaTime for consistent animation speed regardless of framerate
-    const moveDistance = speed * (deltaTime / 16.67); // 16.67ms = 60fps baseline
-    position -= moveDistance;
+    const moveDistance = speed * (deltaTime / 16.67);
     
-    if(position < -tickerWidth - 100) {
-        position = containerWidth;
+    switch(direction) {
+        case 'left':
+            position -= moveDistance;
+            if(position < -tickerWidth - 100) position = containerWidth;
+            ticker.style.transform = `translate3d(${Math.round(position)}px, -50%, 0)`;
+            duplicate.style.transform = `translate3d(${Math.round(position + tickerWidth + 100)}px, -50%, 0)`;
+            break;
+        case 'right':
+            position += moveDistance;
+            if(position > containerWidth + 100) position = -tickerWidth;
+            ticker.style.transform = `translate3d(${Math.round(position)}px, -50%, 0)`;
+            duplicate.style.transform = `translate3d(${Math.round(position - tickerWidth - 100)}px, -50%, 0)`;
+            break;
+        case 'up':
+            position -= moveDistance;
+            if(position < -100) position = containerHeight;
+            ticker.style.transform = `translate3d(-50%, ${Math.round(position)}px, 0)`;
+            duplicate.style.transform = `translate3d(-50%, ${Math.round(position + 100)}px, 0)`;
+            break;
+        case 'down':
+            position += moveDistance;
+            if(position > containerHeight + 100) position = -100;
+            ticker.style.transform = `translate3d(-50%, ${Math.round(position)}px, 0)`;
+            duplicate.style.transform = `translate3d(-50%, ${Math.round(position - 100)}px, 0)`;
+            break;
     }
     
-    // Use transform3d for better GPU acceleration
-    ticker.style.transform = `translate3d(${Math.round(position)}px, -50%, 0)`;
-    duplicate.style.transform = `translate3d(${Math.round(position + tickerWidth + 100)}px, -50%, 0)`;
+    if(animationStyle === 'scroll') {
+        animationId = requestAnimationFrame(scrollTicker);
+    }
+}
+
+function startAnimation() {
+    if(animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+    }
     
-    requestAnimationFrame(scrollTicker);
+    // Clear existing animation classes
+    ticker.classList.remove('fade-animation', 'typewriter-animation', 'bounce-animation', 'pulse-animation', 'shake-animation');
+    duplicate.classList.remove('fade-animation', 'typewriter-animation', 'bounce-animation', 'pulse-animation', 'shake-animation');
+    
+    switch(animationStyle) {
+        case 'scroll':
+            lastTime = 0;
+            requestAnimationFrame(scrollTicker);
+            break;
+        case 'fade':
+            ticker.classList.add('fade-animation');
+            duplicate.style.display = 'none';
+            ticker.style.position = 'static';
+            ticker.style.transform = 'none';
+            break;
+        case 'typewriter':
+            ticker.classList.add('typewriter-animation');
+            duplicate.style.display = 'none';
+            ticker.style.position = 'static';
+            ticker.style.transform = 'none';
+            break;
+        case 'bounce':
+            ticker.classList.add('bounce-animation');
+            duplicate.style.display = 'none';
+            ticker.style.position = 'static';
+            ticker.style.transform = 'none';
+            break;
+        case 'pulse':
+            ticker.classList.add('pulse-animation');
+            duplicate.style.display = 'none';
+            ticker.style.position = 'static';
+            ticker.style.transform = 'none';
+            break;
+        case 'shake':
+            ticker.classList.add('shake-animation');
+            duplicate.style.display = 'none';
+            ticker.style.position = 'static';
+            ticker.style.transform = 'none';
+            break;
+    }
 }
 
 // Handle resize
 window.addEventListener('resize', () => {
     containerWidth = window.innerWidth;
+    containerHeight = window.innerHeight;
     tickerWidth = ticker.offsetWidth;
-    position = containerWidth;
+    if(direction === 'left' || direction === 'right') {
+        position = containerWidth;
+    } else {
+        position = containerHeight;
+    }
 });
-
-requestAnimationFrame(scrollTicker);
 
 // Socket.io for real-time updates
 const script = document.createElement('script');
@@ -91,39 +306,123 @@ script.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const room = urlParams.get('room') || 'default';
     
-    // Join room
     socket.emit('join', room);
     
-    // Listen for updates from control panel
     socket.on('update', (data) => {
         if(data.text) {
             ticker.textContent = data.text;
             duplicate.textContent = data.text;
-            // Wait a frame for the DOM to update before measuring
             requestAnimationFrame(() => {
                 tickerWidth = ticker.offsetWidth;
-                position = containerWidth;
+                if(direction === 'left' || direction === 'right') {
+                    position = containerWidth;
+                } else {
+                    position = containerHeight;
+                }
             });
         }
-        if(data.color) {
-            ticker.style.color = data.color;
-            duplicate.style.color = data.color;
-        }
-        if(data.fontSizePx) {
-            ticker.style.fontSize = data.fontSizePx + 'px';
-            duplicate.style.fontSize = data.fontSizePx + 'px';
-        }
+        
         if(data.fontFamily) {
             ticker.style.fontFamily = data.fontFamily;
             duplicate.style.fontFamily = data.fontFamily;
         }
+        
+        if(data.fontSizePx) {
+            ticker.style.fontSize = data.fontSizePx + 'px';
+            duplicate.style.fontSize = data.fontSizePx + 'px';
+        }
+        
+        if(data.fontWeight) {
+            ticker.style.fontWeight = data.fontWeight;
+            duplicate.style.fontWeight = data.fontWeight;
+        }
+        
+        if(data.textTransform) {
+            ticker.style.textTransform = data.textTransform;
+            duplicate.style.textTransform = data.textTransform;
+        }
+        
+        if(data.letterSpacing !== undefined) {
+            ticker.style.letterSpacing = data.letterSpacing + 'px';
+            duplicate.style.letterSpacing = data.letterSpacing + 'px';
+        }
+        
+        if(data.color) {
+            ticker.style.color = data.color;
+            duplicate.style.color = data.color;
+        }
+        
+        if(data.strokeColor && data.strokeWidth > 0) {
+            const strokeStyle = `${data.strokeWidth}px ${data.strokeColor}`;
+            ticker.style.webkitTextStroke = strokeStyle;
+            duplicate.style.webkitTextStroke = strokeStyle;
+        } else {
+            ticker.style.webkitTextStroke = 'none';
+            duplicate.style.webkitTextStroke = 'none';
+        }
+        
+        if(data.textOpacity) {
+            const opacity = data.textOpacity / 100;
+            ticker.style.opacity = opacity;
+            duplicate.style.opacity = opacity;
+        }
+        
+        if(data.shadowType) {
+            applyTextShadow(data.shadowType, data.shadowColor || '#000000', data.shadowBlur || 4);
+        }
+        
+        if(data.backgroundType) {
+            applyBackground(data.backgroundType, data.backgroundColor || '#000000', data.backgroundOpacity || 80);
+        }
+        
+        if(data.borderRadius !== undefined) {
+            tickerBg.style.borderRadius = data.borderRadius + 'px';
+        }
+        
+        if(data.borderWidth && data.borderWidth > 0) {
+            tickerBg.style.border = `${data.borderWidth}px solid ${data.borderColor || '#ffffff'}`;
+        } else {
+            tickerBg.style.border = 'none';
+        }
+        
         if(data.speed) {
-            // Convert px/sec to pixels per frame at 60fps
             speed = data.speed / 60;
         }
+        
+        if(data.direction) {
+            direction = data.direction;
+            
+            // Reset positions for new direction
+            if(direction === 'left' || direction === 'right') {
+                position = direction === 'left' ? containerWidth : -tickerWidth;
+                ticker.style.top = '50%';
+                duplicate.style.top = '50%';
+                ticker.style.left = 'auto';
+                duplicate.style.left = 'auto';
+            } else {
+                position = direction === 'up' ? containerHeight : -100;
+                ticker.style.left = '50%';
+                duplicate.style.left = '50%';
+                ticker.style.top = 'auto';
+                duplicate.style.top = 'auto';
+            }
+        }
+        
+        if(data.animationStyle) {
+            animationStyle = data.animationStyle;
+            startAnimation();
+        }
+        
+        // Remeasure after all changes
+        requestAnimationFrame(() => {
+            tickerWidth = ticker.offsetWidth;
+        });
     });
 };
 document.head.appendChild(script);
+
+// Initialize
+startAnimation();
 </script>
 </body>
 </html>
