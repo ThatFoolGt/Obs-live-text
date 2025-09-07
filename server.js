@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
             body {
                 font-family: 'Orbitron', monospace;
                 background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-                color: #00ff41;
+                color: #4da6ff;
                 min-height: 100vh;
                 display: flex;
                 align-items: center;
@@ -45,8 +45,8 @@ app.get('/', (req, res) => {
                 padding: 40px;
                 background: rgba(17, 17, 17, 0.9);
                 border-radius: 20px;
-                border: 2px solid #00ff41;
-                box-shadow: 0 0 50px rgba(0, 255, 65, 0.3);
+                border: 2px solid #4da6ff;
+                box-shadow: 0 0 50px rgba(77, 166, 255, 0.3);
                 backdrop-filter: blur(10px);
                 max-width: 600px;
                 width: 90%;
@@ -61,7 +61,7 @@ app.get('/', (req, res) => {
                 left: -50%;
                 width: 200%;
                 height: 200%;
-                background: conic-gradient(transparent, rgba(0, 255, 65, 0.1), transparent 30%);
+                background: conic-gradient(transparent, rgba(77, 166, 255, 0.1), transparent 30%);
                 animation: rotate 4s linear infinite;
                 z-index: -1;
             }
@@ -73,13 +73,13 @@ app.get('/', (req, res) => {
             h1 {
                 font-size: 2.5rem;
                 margin-bottom: 20px;
-                text-shadow: 0 0 20px #00ff41;
+                text-shadow: 0 0 20px #4da6ff;
                 animation: pulse 2s ease-in-out infinite;
             }
             
             @keyframes pulse {
-                0%, 100% { text-shadow: 0 0 20px #00ff41; }
-                50% { text-shadow: 0 0 30px #00ff41, 0 0 40px #00ff41; }
+                0%, 100% { text-shadow: 0 0 20px #4da6ff; }
+                50% { text-shadow: 0 0 30px #4da6ff, 0 0 40px #4da6ff; }
             }
             
             .subtitle {
@@ -103,7 +103,7 @@ app.get('/', (req, res) => {
                 border-radius: 15px;
                 border: 1px solid #333;
                 text-decoration: none;
-                color: #00ff41;
+                color: #4da6ff;
                 transition: all 0.3s ease;
                 flex: 1;
                 min-width: 200px;
@@ -113,8 +113,8 @@ app.get('/', (req, res) => {
             
             .link-card:hover {
                 transform: translateY(-5px);
-                box-shadow: 0 10px 30px rgba(0, 255, 65, 0.3);
-                border-color: #00ff41;
+                box-shadow: 0 10px 30px rgba(77, 166, 255, 0.3);
+                border-color: #4da6ff;
             }
             
             .link-card::before {
@@ -124,7 +124,7 @@ app.get('/', (req, res) => {
                 left: -100%;
                 width: 100%;
                 height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.1), transparent);
+                background: linear-gradient(90deg, transparent, rgba(77, 166, 255, 0.1), transparent);
                 transition: left 0.5s;
             }
             
@@ -149,13 +149,13 @@ app.get('/', (req, res) => {
                 padding: 20px;
                 border-radius: 10px;
                 margin: 20px 0;
-                border-left: 4px solid #00ff41;
+                border-left: 4px solid #4da6ff;
             }
             
             .room-id {
                 font-family: 'Courier New', monospace;
                 font-size: 1.1rem;
-                color: #00ff41;
+                color: #4da6ff;
                 background: #1a1a1a;
                 padding: 8px 12px;
                 border-radius: 5px;
@@ -171,10 +171,10 @@ app.get('/', (req, res) => {
             }
             
             .feature {
-                background: rgba(0, 255, 65, 0.1);
+                background: rgba(77, 166, 255, 0.1);
                 padding: 15px;
                 border-radius: 10px;
-                border: 1px solid rgba(0, 255, 65, 0.3);
+                border: 1px solid rgba(77, 166, 255, 0.3);
             }
             
             .feature-icon {
@@ -244,7 +244,7 @@ app.get('/', (req, res) => {
                 particle.style.position = 'fixed';
                 particle.style.width = '2px';
                 particle.style.height = '2px';
-                particle.style.background = '#00ff41';
+                particle.style.background = '#4da6ff';
                 particle.style.pointerEvents = 'none';
                 particle.style.opacity = Math.random();
                 particle.style.left = Math.random() * window.innerWidth + 'px';

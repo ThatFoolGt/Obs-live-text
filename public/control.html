@@ -11,17 +11,17 @@
     
     body {
       font-family: 'Orbitron', Arial, sans-serif;
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-      color: #00ff41;
+      background: linear-gradient(135deg, #0a0a0f 0%, #1a1a3a 100%);
+      color: #4da6ff;
       margin: 0;
       min-height: 100vh;
       overflow-x: hidden;
     }
     
     .header {
-      background: linear-gradient(90deg, #111, #1a1a2e);
+      background: linear-gradient(90deg, #111, #1a1a3a);
       padding: 20px;
-      border-bottom: 2px solid #00ff41;
+      border-bottom: 2px solid #4da6ff;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -29,8 +29,8 @@
     }
     
     h1 {
-      color: #00ff41;
-      text-shadow: 0 0 20px #00ff41;
+      color: #4da6ff;
+      text-shadow: 0 0 20px #4da6ff;
       font-size: 2rem;
       text-align: center;
       margin: 0;
@@ -38,8 +38,8 @@
     }
     
     @keyframes pulse {
-      0%, 100% { text-shadow: 0 0 20px #00ff41; }
-      50% { text-shadow: 0 0 30px #00ff41, 0 0 40px #00ff41; }
+      0%, 100% { text-shadow: 0 0 20px #4da6ff; }
+      50% { text-shadow: 0 0 30px #4da6ff, 0 0 40px #4da6ff; }
     }
     
     .container {
@@ -81,13 +81,13 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(0,255,65,0.1), transparent);
+      background: linear-gradient(90deg, transparent, rgba(77,166,255,0.1), transparent);
       transition: left 0.5s;
     }
     
     .tab:hover {
-      background: rgba(0,255,65,0.1);
-      color: #00ff41;
+      background: rgba(77,166,255,0.1);
+      color: #4da6ff;
       transform: translateY(-2px);
     }
     
@@ -96,10 +96,10 @@
     }
     
     .tab.active {
-      background: linear-gradient(45deg, #00aa88, #00ff41);
+      background: linear-gradient(45deg, #0066cc, #4da6ff);
       color: #000;
       font-weight: bold;
-      box-shadow: 0 5px 15px rgba(0,255,65,0.3);
+      box-shadow: 0 5px 15px rgba(77,166,255,0.3);
     }
     
     .tab-content {
@@ -141,12 +141,12 @@
       left: 0;
       right: 0;
       height: 3px;
-      background: linear-gradient(90deg, #00ff41, #00aa88, #00ff41);
+      background: linear-gradient(90deg, #4da6ff, #0066cc, #4da6ff);
       opacity: 0.7;
     }
     
     .section-title {
-      color: #00ff41;
+      color: #4da6ff;
       font-size: 1.2rem;
       font-weight: bold;
       margin-bottom: 20px;
@@ -171,7 +171,7 @@
     }
     
     .value-display {
-      color: #00ff41;
+      color: #4da6ff;
       font-weight: bold;
       font-size: 0.9rem;
     }
@@ -189,8 +189,8 @@
     }
     
     input:focus, select:focus, textarea:focus {
-      border-color: #00ff41;
-      box-shadow: 0 0 10px rgba(0,255,65,0.3);
+      border-color: #4da6ff;
+      box-shadow: 0 0 10px rgba(77,166,255,0.3);
       outline: none;
       background: #1a1a1a;
     }
@@ -199,7 +199,7 @@
     input[type="range"] {
       -webkit-appearance: none;
       height: 8px;
-      background: linear-gradient(90deg, #333, #00ff41);
+      background: linear-gradient(90deg, #333, #4da6ff);
       border-radius: 4px;
       outline: none;
     }
@@ -208,16 +208,16 @@
       -webkit-appearance: none;
       width: 20px;
       height: 20px;
-      background: #00ff41;
+      background: #4da6ff;
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(0,255,65,0.5);
+      box-shadow: 0 0 10px rgba(77,166,255,0.5);
       transition: all 0.2s;
     }
     
     input[type="range"]::-webkit-slider-thumb:hover {
       transform: scale(1.2);
-      box-shadow: 0 0 15px rgba(0,255,65,0.8);
+      box-shadow: 0 0 15px rgba(77,166,255,0.8);
     }
     
     /* Color Inputs */
@@ -259,14 +259,14 @@
     }
     
     .btn-primary {
-      background: linear-gradient(45deg, #00aa88, #00ff41);
+      background: linear-gradient(45deg, #0066cc, #4da6ff);
       color: #000;
-      box-shadow: 0 5px 15px rgba(0,255,65,0.3);
+      box-shadow: 0 5px 15px rgba(77,166,255,0.3);
     }
     
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0,255,65,0.4);
+      box-shadow: 0 8px 25px rgba(77,166,255,0.4);
     }
     
     .btn-secondary {
@@ -303,7 +303,7 @@
     
     .preview-text {
       font-size: 24px;
-      color: #00ff41;
+      color: #4da6ff;
       white-space: nowrap;
       transition: all 0.3s ease;
     }
@@ -329,12 +329,12 @@
     }
     
     .viewer-count {
-      background: rgba(0,255,65,0.2);
+      background: rgba(77,166,255,0.2);
       padding: 5px 12px;
       border-radius: 20px;
       font-size: 0.85rem;
-      color: #00ff41;
-      border: 1px solid rgba(0,255,65,0.3);
+      color: #4da6ff;
+      border: 1px solid rgba(77,166,255,0.3);
     }
     
     .chat-messages {
@@ -354,8 +354,8 @@
     }
     
     .chat-message.streamer {
-      background: rgba(0,255,65,0.1);
-      border-left-color: #00ff41;
+      background: rgba(77,166,255,0.1);
+      border-left-color: #4da6ff;
     }
     
     .chat-message:hover {
@@ -365,7 +365,7 @@
     
     .message-author {
       font-weight: bold;
-      color: #00ff41;
+      color: #4da6ff;
       font-size: 0.85rem;
       margin-bottom: 4px;
     }
@@ -460,12 +460,12 @@
     }
     
     ::-webkit-scrollbar-thumb {
-      background: #00ff41;
+      background: #4da6ff;
       border-radius: 4px;
     }
     
     ::-webkit-scrollbar-thumb:hover {
-      background: #00aa88;
+      background: #0066cc;
     }
   </style>
 </head>
@@ -775,7 +775,7 @@
         const btn = event.target;
         const originalText = btn.textContent;
         btn.textContent = '✅ Copied!';
-        btn.style.background = 'linear-gradient(45deg, #00aa88, #00ff41)';
+        btn.style.background = 'linear-gradient(45deg, #0066cc, #4da6ff)';
         setTimeout(() => {
           btn.textContent = originalText;
           btn.style.background = '';
@@ -867,7 +867,7 @@
       neon: {
         font: "'Orbitron', monospace",
         size: 44,
-        color: "#00ff41",
+        color: "#4da6ff",
         shadowType: "neon",
         speed: 120,
         text: "✨ NEON VIBES - Welcome to the future! ✨"
